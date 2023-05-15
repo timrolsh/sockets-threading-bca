@@ -3,6 +3,7 @@ package lab6_1;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ChatServerSocketListener implements Runnable {
@@ -22,11 +23,12 @@ public class ChatServerSocketListener implements Runnable {
 
     private void processListMessage(MessageCtoS_List m) {
         System.out.println("Request from user " + m.name + " to see list: sending...");
-        String s = "List of connected members: \n";
+        ArrayList<String> list = new ArrayList<>();
         for (ClientConnectionData client : clientList) {
-            s += client.getUserName() + "\n";
+            list.add(client.getUserName());
         }
-        individualSend(new MessageStoC_List(s), client);
+
+        individualSend(new MessageStoC_List(list), client);
 
         // send back the list of people to the client that requested the list itself,
         // make a MessageStoS_List.java file

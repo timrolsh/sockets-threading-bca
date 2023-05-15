@@ -22,7 +22,11 @@ public class ChatClientSocketListener implements Runnable {
     }
 
     private void processListMessage(MessageStoC_List m) {
-        System.out.print(m.messageContent);
+        String s = "List of connected members: \n";
+        for (String username : m.usernames) {
+            s += username + "\n";
+        }
+        System.out.print(s);
     }
 
     @Override

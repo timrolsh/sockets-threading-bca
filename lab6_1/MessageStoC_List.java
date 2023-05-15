@@ -1,10 +1,11 @@
 package lab6_1;
 
+import java.util.ArrayList;
+
 public class MessageStoC_List extends Message {
-    public String messageContent;
+    public ArrayList<String> usernames;
 
-    public MessageStoC_List(String messageContent) {
-        this.messageContent = messageContent;
+    public MessageStoC_List(ArrayList<String> usernames) {
+        this.usernames = usernames;
     }
-
 }
