@@ -43,8 +43,8 @@ public class ChatServer {
 
                     // handle client business in another thread
                     pool.execute(new ChatServerSocketListener(client, clientList));
-                } 
-                
+                }
+
                 // prevent exceptions from causing server from exiting.
                 catch (IOException ex) {
                     System.out.println(ex.getMessage());

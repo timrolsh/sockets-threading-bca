@@ -47,6 +47,7 @@ public class ChatGuiClient extends Application {
 
     private ServerInfo serverInfo;
     public String username;
+    public ListView<String> listView;
 
     public static void main(String[] args) {
         launch(args);
@@ -78,7 +79,7 @@ public class ChatGuiClient extends Application {
         borderPane.setCenter(messageArea);
 
         // active user list
-        final ListView<String> listView = new ListView<>();
+        this.listView = new ListView<>();
         listView.setPrefSize(200, 250);
         listView.setEditable(false);
         listView.setItems(names);
@@ -149,6 +150,11 @@ public class ChatGuiClient extends Application {
         }
         textInput.clear();
         sendMessage(new MessageCtoS_Chat(username, getSelectedRecipient(), msg));
+        if (!getSelectedRecipient().equals("Everyone")) {
+            Platform.runLater(() -> {
+                getMessageArea().appendText(username + " to " + getSelectedRecipient() + "(Private): " + msg);
+            });
+        }
     }
 
     public String getSelectedRecipient() {

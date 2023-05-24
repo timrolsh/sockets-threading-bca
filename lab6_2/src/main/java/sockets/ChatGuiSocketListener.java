@@ -4,7 +4,11 @@ import java.io.ObjectInputStream;
 import java.util.Optional;
 
 import javafx.application.Platform;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextInputDialog;
+import javafx.util.Callback;
 
 public class ChatGuiSocketListener implements Runnable {
 
@@ -21,6 +25,22 @@ public class ChatGuiSocketListener implements Runnable {
             ChatGuiClient chatClient) {
         this.socketIn = socketIn;
         this.chatGuiClient = chatClient;
+    }
+
+    private void processKickMessage(MessageStoC_Kick m) {
+        // this user has been kicked from the chatroom
+        if (m.targetUser.equals(this.username)) {
+            chatGuiClient.getMessageArea().appendText("You have been kicked from the chatroom by " + m.sendingUser
+                    + ". You will no longer be able to send or recieve messages and may close this window. ");
+            chatGuiClient.getTextInput().setEditable(false);
+            chatGuiClient.getSendButton().setDisable(true);
+        } else {
+            Platform.runLater(() -> {
+                chatGuiClient.getMessageArea()
+                        .appendText(m.targetUser + " has been kicked from the chatroom by " + m.sendingUser + "\n");
+            });
+            updateUserList();
+        }
     }
 
     private void processWelcomeMessage(MessageStoC_Welcome m) {
@@ -83,13 +103,40 @@ public class ChatGuiSocketListener implements Runnable {
                 this.username = getName();
                 chatGuiClient.username = this.username;
                 chatGuiClient.sendMessage(new MessageCtoS_Join(username));
+                // if the user is an admin, give them the ability to kick people and place Kick
+                // buttons on their screen. This removes the private messaging feature, so for
+                // now, admins will not be able to send private messages.
+                if (username.equals("admin")) {
+                    chatGuiClient.listView.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
+                        @Override
+                        public ListCell<String> call(ListView<String> param) {
+                            return new ListCell<String>() {
+                                @Override
+                                protected void updateItem(String item, boolean empty) {
+                                    super.updateItem(item, empty);
+                                    if (empty || item == null) {
+                                        setText(null);
+                                        setGraphic(null);
+                                    } else {
+                                        Button button = new Button("Kick");
+                                        button.setOnAction(event -> {
+                                            chatGuiClient.sendMessage(new MessageCtoS_Kick(username, item));
+
+                                        });
+                                        setGraphic(button);
+                                        setText(item);
+                                    }
+                                }
+                            };
+                        }
+                    });
+                }
             });
 
             // If the user closes the UI window in ChatGuiClient, appRunning is changed to
             // false to exit this loop.
             while (appRunning) {
                 Message msg = (Message) socketIn.readObject();
-
                 if (msg instanceof MessageStoC_Welcome) {
                     processWelcomeMessage((MessageStoC_Welcome) msg);
                 } else if (msg instanceof MessageStoC_Chat) {
@@ -98,6 +145,8 @@ public class ChatGuiSocketListener implements Runnable {
                     processExitMessage((MessageStoC_Exit) msg);
                 } else if (msg instanceof MessageStoC_List) {
                     processListMessage((MessageStoC_List) msg);
+                } else if (msg instanceof MessageStoC_Kick) {
+                    processKickMessage((MessageStoC_Kick) msg);
                 } else {
                     System.out.println("Unhandled message type: " + msg.getClass());
                 }

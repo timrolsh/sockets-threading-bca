@@ -15,6 +15,21 @@ public class ChatServerSocketListener implements Runnable {
         this.clientList = clientList;
     }
 
+    private void processKickMessage(MessageCtoS_Kick m) {
+        for (ClientConnectionData client : clientList) {
+            if (client.getUserName().equals(m.targetUser)) {
+                try {
+                    System.out.println(m.targetUser + " has been kicked by " + m.sendingUser + ".");
+                    broadcast(new MessageStoC_Kick(m.sendingUser, m.targetUser), null);
+                    client.getSocket().close();
+                    clientList.remove(client);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     private void processChatMessage(MessageCtoS_Chat m) {
         System.out.println("Chat received: " + m);
         broadcast(new MessageStoC_Chat(m.sender, m.recipient, m.msg), null);
@@ -74,6 +89,8 @@ public class ChatServerSocketListener implements Runnable {
                     processChatMessage((MessageCtoS_Chat) msg);
                 } else if (msg instanceof MessageCtoS_List) {
                     processListMessage((MessageCtoS_List) msg);
+                } else if (msg instanceof MessageCtoS_Kick) {
+                    processKickMessage((MessageCtoS_Kick) msg);
                 } else {
                     System.out.println("Unhandled message type: " + msg.getClass());
                 }
