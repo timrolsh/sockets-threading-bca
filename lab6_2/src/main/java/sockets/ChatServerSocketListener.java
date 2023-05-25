@@ -18,14 +18,8 @@ public class ChatServerSocketListener implements Runnable {
     private void processKickMessage(MessageCtoS_Kick m) {
         for (ClientConnectionData client : clientList) {
             if (client.getUserName().equals(m.targetUser)) {
-                try {
-                    System.out.println(m.targetUser + " has been kicked by " + m.sendingUser + ".");
-                    broadcast(new MessageStoC_Kick(m.sendingUser, m.targetUser), null);
-                    client.getSocket().close();
-                    clientList.remove(client);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                System.out.println(m.targetUser + " has been kicked by " + m.sendingUser + ".");
+                broadcast(new MessageStoC_Kick(m.sendingUser, m.targetUser), null);
             }
         }
     }

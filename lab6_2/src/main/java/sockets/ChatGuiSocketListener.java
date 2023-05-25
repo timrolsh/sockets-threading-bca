@@ -34,6 +34,7 @@ public class ChatGuiSocketListener implements Runnable {
                     + ". You will no longer be able to send or receive messages and may close this window. ");
             chatGuiClient.getTextInput().setEditable(false);
             chatGuiClient.getSendButton().setDisable(true);
+            chatGuiClient.sendMessage(new MessageCtoS_Quit());
         } else {
             Platform.runLater(() -> {
                 chatGuiClient.getMessageArea()
