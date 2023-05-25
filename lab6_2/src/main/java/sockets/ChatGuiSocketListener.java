@@ -31,7 +31,7 @@ public class ChatGuiSocketListener implements Runnable {
         // this user has been kicked from the chatroom
         if (m.targetUser.equals(this.username)) {
             chatGuiClient.getMessageArea().appendText("You have been kicked from the chatroom by " + m.sendingUser
-                    + ". You will no longer be able to send or recieve messages and may close this window. ");
+                    + ". You will no longer be able to send or receive messages and may close this window. ");
             chatGuiClient.getTextInput().setEditable(false);
             chatGuiClient.getSendButton().setDisable(true);
         } else {
@@ -118,13 +118,20 @@ public class ChatGuiSocketListener implements Runnable {
                                         setText(null);
                                         setGraphic(null);
                                     } else {
-                                        Button button = new Button("Kick");
-                                        button.setOnAction(event -> {
-                                            chatGuiClient.sendMessage(new MessageCtoS_Kick(username, item));
-
-                                        });
-                                        setGraphic(button);
-                                        setText(item);
+                                        if (item != "Everyone")
+                                        {
+                                            Button button = new Button("Kick");
+                                            button.setOnAction(event -> {
+                                                chatGuiClient.sendMessage(new MessageCtoS_Kick(username, item));
+                                            });
+                                            setGraphic(button);
+                                            setText(item);
+                                        }
+                                        else
+                                        {
+                                            setText("Everyone (Admin can't DM)");
+                                            setGraphic(null);
+                                        }
                                     }
                                 }
                             };

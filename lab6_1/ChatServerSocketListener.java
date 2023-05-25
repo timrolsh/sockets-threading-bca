@@ -44,6 +44,7 @@ public class ChatServerSocketListener implements Runnable {
                     e.printStackTrace();
                 }
                 clientList.remove(client);
+                updateUserList();
             }
         }
 

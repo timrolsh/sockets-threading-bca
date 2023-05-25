@@ -152,7 +152,7 @@ public class ChatGuiClient extends Application {
         sendMessage(new MessageCtoS_Chat(username, getSelectedRecipient(), msg));
         if (!getSelectedRecipient().equals("Everyone")) {
             Platform.runLater(() -> {
-                getMessageArea().appendText(username + " to " + getSelectedRecipient() + "(Private): " + msg);
+                getMessageArea().appendText(username + " to " + getSelectedRecipient() + " (Private): " + msg + "\n");
             });
         }
     }
